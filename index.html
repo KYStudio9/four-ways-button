@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>4 ways button</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="container">
+		<div id="btn-4ways">
+			<svg viewBox="0 0 20 10" id="up" class="direction">
+				<path d="M10,2 L0,10 L20,10 Z"/>
+			</svg>
+			<svg viewBox="0 0 20 10" id="down" class="direction">
+				<path d="M0,0 L20,0 L10,8 Z"/>
+			</svg>
+			<svg viewBox="0 0 10 20" id="left" class="direction">
+				<path d="M10,0 L10,20 L2,10 Z"/>
+			</svg>
+			<svg viewBox="0 0 10 20" id="right" class="direction">
+				<path d="M0,0 L8,10 L0,20 Z"/>
+			</svg>
+		</div>
+		<div id="btn-center">
+			<span id="text">Play</span>
+		</div>
+	</div>
+	<script>
+		const btn4ways = document.getElementById('btn-4ways');
+		const btn_center = document.getElementById('btn-center');
+		const direction_keys = document.querySelectorAll('.direction');
+
+		const getPointerLocation = (e) => {
+			const centerX = e.target.clientWidth / 2;
+			const centerY = e.target.clientHeight / 2;
+			const dX = e.offsetX - centerX;
+			const dY = centerY - e.offsetY;
+
+			let angle = Math.atan2(dY, dX) * 180 / Math.PI;
+			if(angle < 0) {
+				angle += 360;
+			}
+
+			if(angle >= 45 && angle < 135) {
+				return 'up';
+			} else if(angle >= 135 && angle < 225) {
+				return 'left';
+			} else if(angle >= 225 && angle < 315) {
+				return 'down';
+			} else {
+				return 'right';
+			}
+		}
+
+		btn4ways.addEventListener('click', (e) => {
+			const loc = getPointerLocation(e);
+			direction_keys.forEach(direction => {
+				if(direction.id === loc) {
+					direction.classList.add('pressed');
+				} else {
+					direction.classList.remove('pressed');
+				}
+			});
+		});
+
+		btn4ways.addEventListener('mousemove', (e) => {
+			const loc = getPointerLocation(e);
+			if(!btn4ways.classList.contains(`over-${loc}`)) {
+				btn4ways.classList.remove(...btn4ways.classList);
+				btn4ways.classList.add(`over-${loc}`);
+			}
+		});
+
+		btn4ways.addEventListener('mouseout', (e) => {
+			const keys = Array.from(direction_keys);
+			const pressed_key = keys.find(key => key.classList.contains('pressed'));
+			if(pressed_key) {
+				btn4ways.classList.remove(...btn4ways.classList);
+				btn4ways.classList.add(`over-${pressed_key.id}`);
+			}
+		});
+
+		btn_center.addEventListener('click', (e) => {
+			e.target.classList.toggle('clicked');
+		});
+	</script>
+</body>
+</html>
